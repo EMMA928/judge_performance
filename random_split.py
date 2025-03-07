@@ -91,11 +91,11 @@ def train_and_evaluate_model(df, year_range, vectorizer, selected_features):
 
     # Extract cases & judges with highest predicted citations
     df['predicted_citations'] = xgb.predict(X_selected)
-    df["predicted_quality"] = abs(df["predicted_citations"] - df["leave_one_out_avg_all_years"])
+    df["predicted_quality"] = abs(df["predicted_LOO_average_citations"] - df["leave_one_out_avg_all_years"])
 
     # Save results for the decade
-    top_cases = df[['opinion', 'predicted_citations']].sort_values(by='predicted_citations', ascending=False).head(10)
-    top_judges = df.groupby('opinion_songernames')['predicted_citations'].mean().sort_values(ascending=False).head(10)
+    top_cases = df[['opinion', 'predicted_LOO_average_citations']].sort_values(by='predicted_citations', ascending=False).head(10)
+    top_judges = df.groupby('opinion_songernames')['predicted_LOO_average_citations'].mean().sort_values(ascending=False).head(10)
     
     # Save results to files
     top_cases.to_csv(os.path.join(output_directory, f"top_cases_{year_range}.csv"), index=False)
