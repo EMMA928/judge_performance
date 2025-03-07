@@ -102,17 +102,17 @@ def train_and_evaluate_model(df, year_range, vectorizer, selected_features):
     print(f"{year_range} - XGBoost - MSE: {mean_squared_error(y_test, y_pred_xgb)}, R^2: {r2_score(y_test, y_pred_xgb)}")
 
     # Extract cases & judges with highest predicted citations
-    df['predicted_citations'] = xgb.predict(X_selected)
+    df['predicted_LOO_average_citations'] = xgb.predict(X_selected)
 
 
     # Save results for the decade
-    top_cases = df[['opinion', 'predicted_citations']].sort_values(by='predicted_citations', ascending=False).head(10)
-    top_judges = df.groupby('opinion_songernames')['predicted_citations'].mean().sort_values(ascending=False).head(10)
+    top_cases = df[['opinion', 'predicted_LOO_average_citations']].sort_values(by='predicted_citations', ascending=False).head(10)
+    top_judges = df.groupby('opinion_songernames')['predicted_LOO_average_citations'].mean().sort_values(ascending=False).head(10)
     
 
 
     top_judges = top_judges.reset_index()  # Ensure judge names are included in the file
-    top_judges.columns = ['opinion_songernames', 'predicted_citations']  # Rename columns for clarity
+    top_judges.columns = ['opinion_songernames', 'predicted_LOO_average_citations']  # Rename columns for clarity
     top_judges.to_csv(os.path.join(output_directory, f"top_judges_{year_range}.csv"), index=False)
     top_cases.to_csv(os.path.join(output_directory, f"top_cases_{year_range}.csv"), index=False)
     df.to_csv(os.path.join(output_directory, f"output_{year_range}.csv"), index=False)
